@@ -1,20 +1,15 @@
 const http = require('http'),
+    express = require('express'),
+    app = express(),
+    registerRouter = require('./router'),
     fs = require('fs'),
-    Koa = require('koa'),
-    app = new Koa(),
-    router = require('./router/index'),
-    bodyParser = require('koa-bodyparser'),
     url = require('url'),
     path = require('path');
 
-// app.use(async ctx => {
-//     ctx.body = 'Hello http server.';
-// });
+const PORT = 80;
 
-app.use(bodyParser())
-   .use(router.routes())
-   .use(router.allowedMethods());
+registerRouter(app);
 
-http.createServer(app.callback()).listen(80);
+http.createServer(app).listen(PORT);
 
 module.exports = app;

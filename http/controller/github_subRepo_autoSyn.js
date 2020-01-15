@@ -1,6 +1,7 @@
 const crypto = require('crypto'),
     child_process = require('child_process'),
-    githubInfo = require('../../certificate/github.info');
+    path = require('path'),
+    githubInfo = require('../../certificate/password.info').github;
 
 const RepoAutoSyn = {
     async getLatestRepo(ctx, next){
@@ -17,7 +18,7 @@ const RepoAutoSyn = {
             let signature = 'sha1=' + hmac.digest('hex');
             if(signature === sign){
                 let pwd = process.cwd(); 
-                child_process.execSync(`bash ${pwd}\\script\\pullRepo.sh`);
+                child_process.execSync(`bash ${path.join(pwd, 'script', 'pullRepo.sh')}`);
             }
             else
                 console.error(`Wrong signature! Calc: ${signature}, Get: ${sign}`);

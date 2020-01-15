@@ -5,7 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "lint": "eslint --fix --ext .js src"
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
@@ -14,10 +21,11 @@
   "keywords": [
     "server",
     "http2",
-    "koa",
+    "express",
     "blog",
     "MongoDB",
     "GraphQL",
+    "JWT",
     "docker"
   ],
   "author": "kutugu",
@@ -27,12 +35,22 @@
   },
   "homepage": "https://github.com/KuTuGu/MyServer#readme",
   "dependencies": {
-    "graphql": "^14.5.8",
-    "koa": "^2.11.0",
-    "koa-bodyparser": "^4.2.1",
-    "koa-router": "^7.4.0"
+    "apollo-server-express": "^2.9.16",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongo-express": "^0.54.0",
+    "mongoose": "^5.8.6"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
+    "lint-staged": "^9.5.0",
+    "husky": "^4.0.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
