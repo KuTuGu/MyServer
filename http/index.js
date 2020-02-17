@@ -2,14 +2,13 @@ const http = require('http'),
     express = require('express'),
     app = express(),
     registerRouter = require('./router'),
+    Config = require('../config'),
     fs = require('fs'),
     url = require('url'),
     path = require('path');
 
-const PORT = 80;
-
 registerRouter(app);
 
-http.createServer(app).listen(PORT);
+http.createServer(app).listen(Config.http.PORT);
 
 module.exports = app;

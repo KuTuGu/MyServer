@@ -1,0 +1,354 @@
+version: "3.3"
+services:
+    my_server:
+        image: my_server
+        networks:
+            - functions
+        deploy:
+            replicas: 2
+            update_config:
+                parallelism: 1
+                delay: 10s
+            resources:
+                limits:
+                    cpus: "0.3"
+                    memory: 500M
+            restart_policy:
+                condition: on-failure
+            labels:
+                - "traefik.enable=true"
+                - "traefik.http.routers.web.rule=Host(`traefik.test`)"
+                - "traefik.http.routers.web.entrypoints=web"
+                # MUST provided in swarm mode, the ports opened in service.
+                - "traefik.http.services.web.loadbalancer.server.port=8080"
+                - "traefik.http.routers.web.service=web"
+                # websecure
+                - "traefik.http.routers.websecure.rule=Host(`traefik.test`)"
+                - "traefik.http.routers.websecure.entrypoints=websecure"
+                - "traefik.http.services.websecure.loadbalancer.server.port=8081"
+                - "traefik.http.routers.websecure.service=websecure"
+
+    traefik:
+        image: "traefik:v2.1"
+        networks:
+            - functions
+        command:
+            - "--log.level=DEBUG"
+            # dashboard on :8080
+            - "--api=true"
+            # comment this because we have opened dashboard on custom ports below
+            # - "--api.insecure=true"
+            - "--api.dashboard=true"
+            # docker swarm mode
+            - "--providers.docker.swarmMode=true"
+            # Not exposed to traefik
+            - "--providers.docker.exposedbydefault=false"
+            # entrypoints custom
+            - "--entrypoints.traefik-web.address=:80"
+            - "--entrypoints.traefik-websecure.address=:443"
+            - "--entrypoints.gateway.address=:8080"
+            - "--entrypoints.web.address=:8001"
+            - "--entrypoints.websecure.address=:8002"
+            - "--entrypoints.visualizer.address=:8003"
+            - "--entrypoints.portainer.address=:8004"
+            # tls certificate
+            - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
+            - "--certificatesresolvers.mytlschallenge.acme.email=zhongliwang48@gmail.com"
+            - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
+        ports:
+            - "8081:8001"
+            - "8082:8002"
+            - "8080:8080"
+            - "9000:443"
+            - "9001:80"
+            - "9003:8003"
+            - "9004:8004"
+        volumes:
+            - "./letsencrypt:/letsencrypt"
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        deploy:
+            labels:
+                # open dashboard on custom ports
+                - "traefik.enable=true"
+                # traefik-web
+                - "traefik.http.routers.api.entrypoints=traefik-web"
+                - "traefik.http.routers.api.rule=Host(`traefik.test`)"
+                - "traefik.http.routers.api.service=api@internal"
+                - "traefik.http.services.api.loadbalancer.server.port=80"
+                - "traefik.http.routers.api.middlewares=toWebSecure"
+                - "traefik.http.middlewares.toWebSecure.redirectScheme.scheme=https"
+                - "traefik.http.middlewares.toWebSecure.redirectScheme.port=9000"
+                # traefik-websecure
+                - "traefik.http.routers.api-tls.entrypoints=traefik-websecure"
+                - "traefik.http.routers.api-tls.rule=Host(`traefik.test`)"
+                - "traefik.http.routers.api-tls.service=api@internal"
+                - "traefik.http.routers.api-tls.tls.certresolver=mytlschallenge"
+                - "traefik.http.services.api-tls.loadbalancer.server.port=443"
+            placement:
+                constraints: [node.role == manager]
+
+    visualizer:
+        image: dockersamples/visualizer
+        networks:
+            - functions
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+        deploy:
+            replicas: 1
+            placement:
+                constraints: [node.role == manager]
+            labels:
+                - "traefik.enable=true"
+                - "traefik.http.routers.visualizer.rule=Host(`traefik.test`)"
+                - "traefik.http.routers.visualizer.entrypoints=visualizer"
+                - "traefik.http.services.visualizer.loadbalancer.server.port=8080"
+
+    portainer:
+        image: portainer/portainer
+        networks:
+            - functions
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+        deploy:
+            replicas: 1
+            placement:
+                constraints: [node.role == manager]
+            labels:
+                - "traefik.enable=true"
+                - "traefik.http.routers.portainer.rule=Host(`traefik.test`)"
+                - "traefik.http.routers.portainer.entrypoints=portainer"
+                - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+
+    gateway:
+        image: openfaas/gateway:0.18.10
+        networks:
+            - functions
+        environment:
+            functions_provider_url: "http://faas-swarm:8080/"
+            read_timeout: "5m5s" # Maximum time to read HTTP request
+            write_timeout: "5m5s" # Maximum time to write HTTP response
+            upstream_timeout: "5m" # Maximum duration of upstream function call - should be more than read_timeout and write_timeout
+            dnsrr: "true" # Temporarily use dnsrr in place of VIP while issue persists on PWD
+            faas_nats_address: "nats"
+            faas_nats_port: 4222
+            direct_functions: "true" # Functions are invoked directly over the overlay network
+            direct_functions_suffix: ""
+            basic_auth: "${BASIC_AUTH:-false}"
+            secret_mount_path: "/run/secrets/"
+            scale_from_zero: "true" # Enable if you want functions to scale from 0/0 to min replica count upon invoke
+            max_idle_conns: 1024
+            max_idle_conns_per_host: 1024
+            auth_proxy_url: "${AUTH_URL:-}"
+            auth_proxy_pass_body: "false"
+        deploy:
+            labels:
+                - "traefik.enable=true"
+                - "traefik.http.routers.gateway.rule=Host(`traefik.test`)"
+                - "traefik.http.routers.gateway.entrypoints=gateway"
+                - "traefik.http.services.gateway.loadbalancer.server.port=8080"
+            resources:
+                # limits:   # Enable if you want to limit memory usage
+                #     memory: 200M
+                reservations:
+                    memory: 100M
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 20
+                window: 380s
+            placement:
+                constraints:
+                    - "node.platform.os == linux"
+        secrets:
+            - basic-auth-user
+            - basic-auth-password
+
+    # auth service provide basic-auth plugin for system APIs
+    basic-auth-plugin:
+        image: openfaas/basic-auth-plugin:0.18.10
+        networks:
+            - functions
+        environment:
+            secret_mount_path: "/run/secrets/"
+            user_filename: "basic-auth-user"
+            pass_filename: "basic-auth-password"
+        deploy:
+            placement:
+                constraints:
+                    - "node.role == manager"
+                    - "node.platform.os == linux"
+            resources:
+                # limits:   # Enable if you want to limit memory usage
+                #     memory: 100M
+                reservations:
+                    memory: 50M
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 20
+                window: 380s
+        secrets:
+            - basic-auth-user
+            - basic-auth-password
+
+    # Docker Swarm provider
+    faas-swarm:
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+        image: openfaas/faas-swarm:0.8.2
+        networks:
+            - functions
+        environment:
+            read_timeout: "5m5s" # set both here, and on your functions
+            write_timeout: "5m5s" # set both here, and on your functions
+            DOCKER_API_VERSION: "1.30"
+            basic_auth: "${BASIC_AUTH:-false}"
+            secret_mount_path: "/run/secrets/"
+        deploy:
+            placement:
+                constraints:
+                    - "node.role == manager"
+                    - "node.platform.os == linux"
+            resources:
+                # limits:   # Enable if you want to limit memory usage
+                #     memory: 100M
+                reservations:
+                    memory: 100M
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 20
+                window: 380s
+        secrets:
+            - basic-auth-user
+            - basic-auth-password
+
+    nats:
+        image: nats-streaming:0.11.2
+        # Uncomment the following port mappings if you wish to expose the
+        # NATS client and/or management ports you must also add `-m 8222` to the command
+        # ports:
+        #     - 4222:4222
+        #     - 8222:8222
+        command: "--store memory --cluster_id faas-cluster"
+        networks:
+            - functions
+        deploy:
+            resources:
+                limits:
+                    memory: 125M
+                reservations:
+                    memory: 50M
+            placement:
+                constraints:
+                    - "node.platform.os == linux"
+
+    queue-worker:
+        image: openfaas/queue-worker:0.8.4
+        networks:
+            - functions
+        environment:
+            max_inflight: "1"
+            ack_wait: "5m5s" # Max duration of any async task / request
+            basic_auth: "${BASIC_AUTH:-false}"
+            secret_mount_path: "/run/secrets/"
+            gateway_invoke: "true"
+            faas_gateway_address: "gateway"
+        deploy:
+            resources:
+                limits:
+                    memory: 50M
+                reservations:
+                    memory: 20M
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 20
+                window: 380s
+            placement:
+                constraints:
+                    - "node.platform.os == linux"
+        secrets:
+            - basic-auth-user
+            - basic-auth-password
+
+    # End services
+
+    # Start monitoring
+
+    prometheus:
+        image: prom/prometheus:v2.11.0
+        environment:
+            no_proxy: "gateway"
+        configs:
+            - source: prometheus_config
+              target: /etc/prometheus/prometheus.yml
+            - source: prometheus_rules
+              target: /etc/prometheus/alert.rules.yml
+        command:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+        #   - -storage.local.path=/prometheus
+        ports:
+            - 9090:9090
+        networks:
+            - functions
+        deploy:
+            placement:
+                constraints:
+                    - "node.role == manager"
+                    - "node.platform.os == linux"
+            resources:
+                limits:
+                    memory: 500M
+                reservations:
+                    memory: 200M
+
+    alertmanager:
+        image: prom/alertmanager:v0.18.0
+        environment:
+            no_proxy: "gateway"
+        command:
+            - "--config.file=/alertmanager.yml"
+            - "--storage.path=/alertmanager"
+        networks:
+            - functions
+        # Uncomment the following port mapping if you wish to expose the Prometheus
+        # Alertmanager UI.
+        # ports:
+        #     - 9093:9093
+        deploy:
+            resources:
+                limits:
+                    memory: 50M
+                reservations:
+                    memory: 20M
+            placement:
+                constraints:
+                    - "node.role == manager"
+                    - "node.platform.os == linux"
+        configs:
+            - source: alertmanager_config
+              target: /alertmanager.yml
+        secrets:
+            - basic-auth-password
+
+configs:
+    prometheus_config:
+        file: ./prometheus/prometheus.yml
+    prometheus_rules:
+        file: ./prometheus/alert.rules.yml
+    alertmanager_config:
+        file: ./prometheus/alertmanager.yml
+
+networks:
+    functions:
+        driver: overlay
+        attachable: true
+        labels:
+            - "openfaas=true"
+
+secrets:
+    basic-auth-user:
+        external: true
+    basic-auth-password:
+        external: true

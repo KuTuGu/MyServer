@@ -1,9 +1,9 @@
 module.exports = {
     http: {
-        PORT: 80
+        PORT: 8080
     },
     http2: {
-        PORT: 8080,
+        PORT: 8081,
         GraphqlPath: '/graphql'
     },
     mongodb: {
