@@ -1,7 +1,7 @@
 const crypto = require('crypto'),
     child_process = require('child_process'),
     path = require('path'),
-    githubInfo = require('../../certificate/password.info').github;
+    githubInfo = require('../../password.js').github;
 
 const RepoAutoSyn = {
     async getLatestRepo(ctx, next){

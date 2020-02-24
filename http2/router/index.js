@@ -3,7 +3,7 @@ const express = require('express'),
     Config = require('../../config'),
     path = require('path'),
     jwt = require('jsonwebtoken'),
-    jwtSecret = require('../../certificate/password.info').jwt,
+    jwtSecret = require('../../password.js').jwt,
     mongo_express = require('mongo-express/lib/middleware'),
     generate_mongo_express_config = require('../../mongo_express_config'); 
 
@@ -11,25 +11,43 @@ module.exports = app => {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
 
-    app.use((req, res, next) => {
+    app.use(`/${Config.http2.GraphqlPath}`, (req, res, next) => {
         let error = {};
 
-        if(req.path === Config.http2.GraphqlPath && req.method === "POST"){
+        if(req.method === "POST"){
             const whiteQuery = ['login', 'signup'];
 
             if(whiteQuery.indexOf(req.body.operationName) <= -1){
                 jwt.verify(req.headers.authorization, jwtSecret.secret, (err, decoded) => {console.log(req.headers.authorization, jwtSecret,)
                     if (err) 
                         error = err;
-                    else{
-                        console.log(decoded)
-                    }
                 })
             }
         }
 
         next(error);
     })
+
+    app.use('/mongo_express', (req, res, next) => {
+        let result, token = getToken(req.headers.cookie)
+        jwt.verify(token, jwtSecret.secret, (error, decoded) => {
+            if (error) {
+              next(error)
+            }
+            result = decoded;
+        })
+        console.log(result)
+        return mongo_express(generate_mongo_express_config({
+            // Setting the connection string will only give access to that database
+            // to see more databases you need to set mongodb.admin to true or add databases to the mongodb.auth list
+            db:       Config.mongodb.DB,
+            host:     Config.mongodb.HOST,
+            port:     Config.mongodb.PORT,
+            // ssl:      true,
+            username: result.name,
+            password: result.secret,
+        }))(req, res, next)
+    });
 
     app.use((err, req, res, next) => {
         if (err.name === 'JsonWebTokenError') {
@@ -40,20 +58,16 @@ module.exports = app => {
         }
     });
 
-    // app.use('/mongo_express', mongo_express(generate_mongo_express_config(
-    //     {
-    //         // Setting the connection string will only give access to that database
-    //         // to see more databases you need to set mongodb.admin to true or add databases to the mongodb.auth list
-    //         db:       `User${username}`,
-    //         host:     MongodbInfo.HOST,
-    //         port:     MongodbInfo.PORT,
-    //       //   ssl:      true,
-    //         username: "tet",
-    //         password: "tet",
-    //     }
-    // )));
-
     // app.get('/blog', RepoAutoSyn.getLatestRepo);
 
     app.use('/',  express.static(path.join(__dirname,'..','page', 'dist')));
+
+    function getToken(cookie){
+        let arr, reg=new RegExp("(^| )token=([^;]*)(;|$)");
+    
+        if(arr = cookie.match(reg))
+            return unescape(arr[2]);
+        else
+            return null;
+    }
 }

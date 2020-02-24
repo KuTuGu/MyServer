@@ -1,7 +1,9 @@
-certificate
-
 node_modules
+
+dist
 
 package-lock.json
 
 .cache
+
+password.js

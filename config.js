@@ -1,6 +1,6 @@
 module.exports = {
     http: {
-        PORT: 8080
+        PORT: 8082
     },
     http2: {
         PORT: 8081,
@@ -12,9 +12,9 @@ module.exports = {
         DB:       'UserApple'
     },
     jwt: {
-        data: ["name", "authority", "passwd"],
+        data: ["name", "authority", "secret", "passwd"],
         options: {
-            expiresIn: 60 * 60,
+            expiresIn: 60 * 60 * 24,
         }
     },
     redis: {

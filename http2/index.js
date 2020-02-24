@@ -1,12 +1,11 @@
-const http2 = require('http2'),
-    express = require('express'),
+const express = require('express'),
     mongoose = require('mongoose'),
     app = express(),
     { ApolloServer, gql } = require('apollo-server-express'),
     typeDefs = require('./model/graphQL'),
     resolvers = require('./controller'),
     registerRouter = require('./router'),
-    MongodbInfo = require('../certificate/password.info').mongodb,
+    MongodbInfo = require('../password.js').mongodb,
     Config = require('../config'),
     fs = require('fs'),
     url = require('url');
@@ -21,12 +20,6 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app });
 
-// http2.createSecureServer({
-//     key: fs.readFileSync('certificate/privatekey.pem'), // private
-//     cert: fs.readFileSync('certificate/certificate.pem') // public
-// }, app).listen(Config.http2.PORT, () => {
-//     console.log(`🚀GraphQL Server ready at https://localhost:${Config.http2.PORT}${Config.http2.GraphqlPath}`)
-// });
 
 app.listen(Config.http2.PORT, () => {
     console.log(`🚀GraphQL server ready at http://localhost:${Config.http2.PORT}${Config.http2.GraphqlPath}`)

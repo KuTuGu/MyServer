@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken'),
-    jwtSecret = require('../../../certificate/password.info').jwt,
+    jwtSecret = require('../../../password.js').jwt,
     jwtConfig = require('../../../config').jwt,
     crypto = require('crypto'),
     UserModel = require("../../model/mongoDB/user");
@@ -12,7 +12,7 @@ module.exports = {
 
             hmac.update(password);
 
-            [err, res] = await UserModel.find({name: username}).then(
+            const [err, res] = await UserModel.find({name: username}).then(
                 data => [null, data],  err => [err, null]
             );
 
@@ -28,14 +28,11 @@ module.exports = {
                     let obj = {};
                     
                     jwtConfig.data.map(key => {
-                        obj[key] = res[0][key]
+                        if(key === 'secret')
+                            obj.secret = password;
+                        else
+                            obj[key] = res[0][key]
                     });
-
-                    console.log('hi', context.res);
-                    context.res.cookie("test", "123123", {
-                        domain: 'localhost'
-                    });
-                    // console.log(Object.keys(request.res))
 
                     return {
                         status: true,
