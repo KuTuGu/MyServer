@@ -1,23 +1,18 @@
 <template>
   <Carousel v-model="page" v-resize="getContainerSize" ref="getUserMedia" class="container">
     <CarouselItem>
-        <div :style="containerSize" >
-          <Basic />
+        <div :style="containerSize">
+          <Video />
         </div>
     </CarouselItem>
     <CarouselItem>
         <div :style="containerSize">
-          <Basic />
+          <Audio />
         </div>
     </CarouselItem>
     <CarouselItem>
         <div :style="containerSize">
-          <Basic />
-        </div>
-    </CarouselItem>
-    <CarouselItem>
-        <div :style="containerSize">
-          <Basic />
+          <Screen />
         </div>
     </CarouselItem>
   </Carousel>
@@ -25,13 +20,15 @@
 
 <script>
 import { Carousel, CarouselItem } from 'view-design';
-import Basic from "./basic"; 
+import Video from "./video"; 
+import Audio from "./audio";
+import Screen from "./screen";
 
 export default {
   name: 'GetUserMedia',
   components: {
     Carousel, CarouselItem,
-    Basic
+    Video, Audio, Screen
   },
   data () {
     return {
