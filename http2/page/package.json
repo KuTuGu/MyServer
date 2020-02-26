@@ -23,7 +23,8 @@
     "vuex": "^3.1.1",
     "apollo-boost": "^0.4.7",
     "apollo-link-context": "^1.0.19",
-    "graphql": "^14.5.8"
+    "graphql": "^14.5.8",
+    "vue-codemirror-lite": "^1.0.4"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.2.0",

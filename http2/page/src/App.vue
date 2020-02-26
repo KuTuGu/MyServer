@@ -2,18 +2,14 @@
   <div id="app" class="layout">
     <Layout>
       <Sider class="layout-sidebar" ref="side1" hide-trigger collapsible collapsed-width="78" v-model="isCollapsed">
-        <Menu active-name="1-2" theme="dark" :width="isCollapsed ? '78px' : '200px'" :class="menuitemClasses">
-          <MenuItem name="1-1">
-              <Icon type="ios-navigate"></Icon>
-              <span>Option 1</span>
+        <Menu active-name="demo" theme="dark" :width="isCollapsed ? '78px' : '200px'" :class="menuitemClasses" @on-select="selectItem">
+          <MenuItem name="demo">
+              <Icon type="md-image"></Icon>
+              <span>Demo</span>
           </MenuItem>
-          <MenuItem name="1-2">
-              <Icon type="ios-search"></Icon>
-              <span>Option 2</span>
-          </MenuItem>
-          <MenuItem name="1-3">
-              <Icon type="ios-settings"></Icon>
-              <span>Option 3</span>
+          <MenuItem name="code">
+              <Icon type="md-code"></Icon>
+              <span>Code</span>
           </MenuItem>
         </Menu>
       </Sider>
@@ -25,24 +21,32 @@
         <Footer class="layout-footer">2020-2021 &copy; KuTuGu</Footer>
       </Layout>
     </Layout>
+    <Drawer width="70" placement="left" :closable="false" v-model="drawer">
+      <Code />
+    </Drawer>
   </div>
 </template>
 
 <script>
 import Navigation from './components/navigation.vue';
-import { Layout, Sider, Menu, MenuItem, Icon, Content } from "view-design";
+import Code from './components/code.vue';
+import { Layout, Sider, Menu, MenuItem, Icon, Content, Drawer } from "view-design";
 import "view-design/dist/styles/iview.css";
+
+console.log(Code)
 
 export default {
   name: 'App',
   components: {
-    Navigation,
-    Layout, Sider, Menu, MenuItem, Icon, Content
+    Navigation, 
+    Code,
+    Layout, Sider, Menu, MenuItem, Icon, Content, Drawer
   },
   data(){
     return {
       theme: 'light',
-      isCollapsed: true
+      isCollapsed: true,
+      drawer: false
     }
   },
   computed: {
@@ -62,6 +66,11 @@ export default {
   methods: {
     collapsedSider () {
       this.$refs.side1.toggleCollapse();
+    },
+    selectItem(name){
+      if(name === "code"){
+        this.drawer = !this.drawer;
+      }
     }
   }
 }
@@ -75,6 +84,7 @@ export default {
   text-align: center;
   color: #2c3e50;
   min-width: 1000px;
+  border: none;
 }
 .overflowHidden{
   display: inline-block;
@@ -122,7 +132,7 @@ export default {
   position: fixed;
   left: 0;
   top: 60px;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 62px);
   transition: width .2s ease-in-out;
 }
 .menu-item span{
@@ -154,6 +164,5 @@ export default {
   min-height: calc(100vh - 122px);
   margin: 80px 20px 0 20px;
   background: #fff;
-
 }
 </style>
