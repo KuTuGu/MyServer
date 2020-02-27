@@ -15,17 +15,13 @@
 </template>
 
 <script>
-import { Alert, Button, Card, Icon } from 'view-design';
-
 export default {
   name: 'MongoDB',
-  components: {
-    Alert, Button, Card, Icon
-  },
 }
 </script>
 <style scoped>
 #mongodb{
+  width: 100%;
   min-height: inherit;
   display: flex;
   justify-content: space-around;

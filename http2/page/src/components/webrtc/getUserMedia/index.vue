@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import { Carousel, CarouselItem } from 'view-design';
 import Video from "./video"; 
 import Audio from "./audio";
 import Screen from "./screen";
@@ -27,7 +26,6 @@ import Screen from "./screen";
 export default {
   name: 'GetUserMedia',
   components: {
-    Carousel, CarouselItem,
     Video, Audio, Screen
   },
   data () {

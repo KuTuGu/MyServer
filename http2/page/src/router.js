@@ -1,27 +1,20 @@
-// GraphQL
+import GetVue from "./components/getVue";
 import Sign from "./components/sign";
 import Search from "./components/search";
-import MongoDB from "./components/mongodb";
-// WebRTC
-import GetUserMedia from "./components/webrtc/getUserMedia";
-import RTCPeerConnection from "./components/webrtc/RTCPeerConnection";
+import Audio from "./components/webrtc/getUserMedia/audio";
+
+const PATH = [
+  "/", "/mongodb",
+  "/webrtc/getUserMedia/video",
+  "/webrtc/getUserMedia/screen",
+]
 
 export default {
-  routes: [
-    { 
-      path: "/sign", component: Sign 
-    },
-    { 
-      path: "/search", component: Search
-    },
-    { 
-      path: "/mongodb", component: MongoDB
-    },
-    { 
-      path: "/webrtc/getUserMedia", component: GetUserMedia
-    },
-    { 
-      path: "/webrtc/RTCPeerConnection", component: RTCPeerConnection
-    },
-  ],
+  routes: PATH.map(p => ({
+    path: p, component: GetVue
+  })).concat([
+    { path: "/sign", component: Sign },
+    { path: "/search", component: Search },
+    { path: "/webrtc/getUserMedia/audio", component: Audio },
+  ])
 };

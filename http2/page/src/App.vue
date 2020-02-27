@@ -2,14 +2,10 @@
   <div id="app" class="layout">
     <Layout>
       <Sider class="layout-sidebar" ref="side1" hide-trigger collapsible collapsed-width="78" v-model="isCollapsed">
-        <Menu active-name="demo" theme="dark" :width="isCollapsed ? '78px' : '200px'" :class="menuitemClasses" @on-select="selectItem">
-          <MenuItem name="demo">
-              <Icon type="md-image"></Icon>
-              <span>Demo</span>
-          </MenuItem>
+        <Menu theme="dark" :width="isCollapsed ? '78px' : '200px'" :class="menuitemClasses" @on-select="selectItem">
           <MenuItem name="code">
-              <Icon type="md-code"></Icon>
-              <span>Code</span>
+            <Icon type="md-code"></Icon>
+            <span>Code</span>
           </MenuItem>
         </Menu>
       </Sider>
@@ -21,7 +17,7 @@
         <Footer class="layout-footer">2020-2021 &copy; KuTuGu</Footer>
       </Layout>
     </Layout>
-    <Drawer width="70" placement="left" :closable="false" v-model="drawer">
+    <Drawer width="70" placement="left" :draggable='true' :closable="false" v-model="drawer">
       <Code />
     </Drawer>
   </div>
@@ -30,23 +26,31 @@
 <script>
 import Navigation from './components/navigation.vue';
 import Code from './components/code.vue';
-import { Layout, Sider, Menu, MenuItem, Icon, Content, Drawer } from "view-design";
-import "view-design/dist/styles/iview.css";
-
-console.log(Code)
+import VueJSON from "./vue.json";
 
 export default {
   name: 'App',
   components: {
-    Navigation, 
-    Code,
-    Layout, Sider, Menu, MenuItem, Icon, Content, Drawer
+    Navigation, Code,
   },
   data(){
     return {
       theme: 'light',
       isCollapsed: true,
-      drawer: false
+      drawer: false,
+      firstTip: 0,
+      path: {
+        "/": "src/components/hello.vue",
+        "/sign": "src/components/sign.vue",
+        "/search": "src/components/search.vue",
+        "/mongodb": "src/components/mongodb.vue",
+        "/webrtc/getUserMedia/video": "src/components/webrtc/getUserMedia/video.vue",
+        "/webrtc/getUserMedia/audio": "src/components/webrtc/getUserMedia/audio.vue",
+        "/webrtc/getUserMedia/screen": "src/components/webrtc/getUserMedia/screen.vue",
+        "/webrtc/RTCPeerConnection": "src/components/webrtc/RTCPeerConnection.vue",
+        "/webrtc/RTCDataChannel": "src/components/webrtc/RTCDataChannel.vue",
+        "/webgl": "src/components/webgl.vue",
+      },
     }
   },
   computed: {
@@ -63,6 +67,9 @@ export default {
       ]
     }
   },
+  mounted(){
+    this.$store.commit('updateContent', VueJSON[this.path[this.$route.path]]);
+  },
   methods: {
     collapsedSider () {
       this.$refs.side1.toggleCollapse();
@@ -72,6 +79,39 @@ export default {
         this.drawer = !this.drawer;
       }
     }
+  },
+  watch: {
+    "$route.path": function(newVal){
+      this.$store.commit('updateContent', VueJSON[this.path[newVal]]);
+    },
+    "drawer": function(newVal){
+      if(newVal && !this.firstTip){
+        this.$Notice.info({
+          title: 'CodeMirror usage Tip',
+          desc: `<ul>
+            <li>Tab: autocomplete</li><br />
+            <li>Ctrl-F/Cmd-F: Start searching</li><br />
+            <li>Ctrl-G/Cmd-G: Find next search result</li><br />
+            <li>Shift-Ctrl-G/Shift-Cmd-G: Find previous</li><br />
+            <li>Shift-Ctrl-F/Cmd-Option-F: Replace</li><br />
+            <li>Shift-Ctrl-R/Shift-Cmd-Option-F: Replace all</li><br />
+            <li>Shift-Ctrl-G/Shift-Cmd-G: Find previous</li><br />
+            <li>Alt-F: Persistent search (dialog doesn't autoclose, enter to find next, Shift-Enter to find previous)</li><br />
+            <li>Alt-G: Jump to line</li>
+          </ul>`,
+          duration: 0
+        });
+        this.$Notice.info({
+          title: "Dynamic rendering",
+          desc: `<ul><br />
+            <li>You can add <a href="https://www.iviewui.com/" target="_blank">iview-ui</a> internally</li><br />
+            <li>Some components can't be modified</li><br />
+          </ul>`,
+          duration: 0
+        });
+        this.firstTip++;
+      }
+    },
   }
 }
 </script>
@@ -85,6 +125,7 @@ export default {
   color: #2c3e50;
   min-width: 1000px;
   border: none;
+  overflow: scroll;
 }
 .overflowHidden{
   display: inline-block;
@@ -100,7 +141,7 @@ export default {
     background: #f5f7f9;
     position: relative;
     border-radius: 4px;
-    overflow: hidden;
+    overflow: scroll;
 }
 .layout-header-bar{
     background: #fff;
@@ -131,7 +172,6 @@ export default {
 .menu-item{
   position: fixed;
   left: 0;
-  top: 60px;
   height: calc(100vh - 62px);
   transition: width .2s ease-in-out;
 }
@@ -163,6 +203,6 @@ export default {
 .content{
   min-height: calc(100vh - 122px);
   margin: 80px 20px 0 20px;
-  background: #fff;
+  background-color: #506b9e;
 }
 </style>

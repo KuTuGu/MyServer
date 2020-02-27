@@ -28,14 +28,10 @@
 </template>
 
 <script>
-import { Progress, Select, Option, } from 'view-design';
 import SoundMeter from './soundMeter';
 
 export default {
   name: 'Audio',
-  components: {
-    Progress, Select, Option,
-  },
   data () {
     return {
       audioOn: false,
@@ -55,7 +51,7 @@ export default {
       this.outputDevices = devices.filter(dev => dev.kind === "audiooutput")
       this.inputAudio = this.inputDevices[0]
       this.outputAudio = this.outputDevices[0]
-      this.$Notice.open({
+      this.$Notice.warning({
         title: 'Noise',
         desc: 'Best to use headphones, there may be harsh noise.'
       });

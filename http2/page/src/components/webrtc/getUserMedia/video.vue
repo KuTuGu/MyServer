@@ -1,6 +1,6 @@
 <template>
   <div class="videoContainer">
-    <video id="video" ref="video" :style='filterStyle' controls></video>
+    <video id="video" ref="video" :style='filterStyle' controls src=""></video>
     <div class="selectContainer">
       <div>
         Devices :
@@ -24,13 +24,8 @@
 </template>
 
 <script>
-import { Button, Select, Option, Slider, Tooltip } from 'view-design';
-
 export default {
   name: 'Video',
-  components: {
-    Button, Select, Option, Slider, Tooltip
-  },
   data () {
     return {
       cameraOn: false,
@@ -106,7 +101,7 @@ export default {
       }
     },
     closeCamera(){
-      this.$refs.video.src = '';
+      // this.$refs.video.src = undefined;
       this.videoTrack.stop();
       this.cameraOn = false;
     }
@@ -122,7 +117,7 @@ export default {
 }
 #video{
   width: 80%;
-  height: 80%;
+  height: 50vh;
   margin: 10px 10%;
 }
 .selectContainer{

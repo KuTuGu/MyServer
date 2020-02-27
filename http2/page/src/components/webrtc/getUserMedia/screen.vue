@@ -11,13 +11,8 @@
 </template>
 
 <script>
-import { Button } from 'view-design';
-
 export default {
-  name: 'Audio',
-  components: {
-    Button
-  },
+  name: 'Screen',
   data () {
     return {
       capture: false,
@@ -64,7 +59,8 @@ export default {
       }
     },
     stopCapturing(){
-      this.mediaRecorder.stop();
+      if (this.mediaRecorder)
+        this.mediaRecorder.stop();
       this.mediaRecorder = null;
       this.stream.getTracks().map(track => track.stop());
       this.stream = null;

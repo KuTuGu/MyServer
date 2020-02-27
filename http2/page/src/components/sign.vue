@@ -22,15 +22,11 @@
 </template>
 
 <script>
-import { Card, Input, Button, Icon } from 'view-design';
 import gql from 'graphql-tag';
 import Client from '../graphql';
 
 export default {
     name: 'Sign',
-    components: {
-        Card, Input, Button, Icon
-    },
     data(){
         return {
             username: '',

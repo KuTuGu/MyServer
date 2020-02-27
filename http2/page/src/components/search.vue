@@ -31,15 +31,11 @@
 </template>
 
 <script>
-import { Input, List, ListItem, ListItemMeta, Icon, Page } from 'view-design';
 import gql from 'graphql-tag';
 import Client from '../graphql';
 
 export default {
   name: 'Search',
-  components: {
-    Input, List, ListItem, ListItemMeta, Icon, Page
-  },
   data(){
     return {
       presentItems: [],
@@ -197,6 +193,7 @@ export default {
     position: relative;
     min-height: inherit;
     text-align: left;
+    background: #fff;
   }
   #input{
     width: 400px;

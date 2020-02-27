@@ -4,7 +4,7 @@
   "private": true,
   "description": "A simple client demo used for trying new technology.",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "node vueToString.js && vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },

@@ -50,7 +50,6 @@ export default {
   data(){
     return {
       editor: null,
-      value: "",
       skipNextChangeEvent: false,
       options: {
         mode: 'vue',
@@ -71,36 +70,31 @@ export default {
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
         fullScreen: true,
         extraKeys: {'Tab': 'autocomplete'},
-      }
+      },
+      readOnly: ["/sign", "/search", "/webrtc/getUserMedia/audio"],
     }
   },
-  ready() {
-    this.initEditor();
-  },
   mounted() {
+    if(this.readOnly.indexOf(this.$route.path) >= 0){
+      this.$set(this.options, 'readOnly', true);
+    }
     this.initEditor();
   },
   methods: {
     initEditor(){
-      const path = this.$route.path.slice(1),
-            _this = this;
-      path;
       this.editor = CodeMirror.fromTextArea(this.$refs.editor, this.options)
-      this.editor.setValue(this.value)
-      this.editor.on('change', function(cm) {
-        if (_this.skipNextChangeEvent) {
-          _this.skipNextChangeEvent = false
+      this.editor.setValue(this.$store.state.content)
+      this.editor.on('change', cm => {
+        this.$store.commit('updateContent', cm.getValue())
+        if (this.skipNextChangeEvent) {
+          this.skipNextChangeEvent = false
           return
-        }
-        if (_this.$emit) {
-          _this.$emit('change', cm.getValue())
-          _this.$emit('input', cm.getValue())
         }
       })
     }
   },
   watch: {
-    'value': newVal => {
+    '$store.state.content': function(newVal){
       let editorValue = this.editor.getValue()
       if (newVal !== editorValue) {
         this.skipNextChangeEvent = true
@@ -109,7 +103,12 @@ export default {
         this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
       }
     },
-    'options': newOptions => {
+    "$route.path": function(newVal){
+      if(this.readOnly.indexOf(newVal) >= 0){
+        this.$set(this.options, 'readOnly', true);
+      }
+    },
+    'options': function(newOptions){
       if (typeof newOptions === 'object') {
         for (let optionName in newOptions) {
           this.editor.setOption(optionName, newOptions[optionName])

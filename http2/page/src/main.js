@@ -4,15 +4,14 @@ import Vuex from "vuex"
 import App from './App.vue'
 import router from "./router"
 import store from "./store"
-import { Message, Notice } from 'view-design';
+import ViewUI from 'view-design';
+import 'view-design/dist/styles/iview.css';
 
 Vue.config.productionTip = false
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
-
-Vue.prototype.$Message = Message
-Vue.prototype.$Notice = Notice
+Vue.use(ViewUI);
 
 new Vue({
   store: new Vuex.Store(store),

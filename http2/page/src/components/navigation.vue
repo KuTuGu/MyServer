@@ -36,20 +36,30 @@
 							WebRTC
 					</template>
 					<MenuGroup title="getUserMedia">
-						<router-link to="/webrtc/getUserMedia">
+						<router-link to="/webrtc/getUserMedia/video">
 							<MenuItem name="2-1">
-								basic
+								video
+							</MenuItem>
+						</router-link>
+						<router-link to="/webrtc/getUserMedia/audio">
+							<MenuItem name="2-2">
+								audio
+							</MenuItem>
+						</router-link>
+						<router-link to="/webrtc/getUserMedia/screen">
+							<MenuItem name="2-3">
+								screen
 							</MenuItem>
 						</router-link>
 					</MenuGroup>
 					<MenuGroup title="RTCPeerConnection">
 						<router-link to="/webrtc/RTCPeerConnection">
-							<MenuItem name="2-2">basic</MenuItem>
+							<MenuItem name="2-4">basic</MenuItem>
 						</router-link>
 					</MenuGroup>
 					<MenuGroup title="RTCDataChannel">
 						<router-link to="/webrtc/RTCDataChannel">
-							<MenuItem name="2-3">basic</MenuItem>
+							<MenuItem name="2-5">basic</MenuItem>
 						</router-link>	
 					</MenuGroup>
 			</Submenu>
@@ -69,13 +79,8 @@
 </template>
 
 <script>
-import { Menu, MenuItem, MenuGroup, Submenu, Icon } from 'view-design';
-
 export default {
     name: 'Navigation',
-    components: {
-        Menu, Icon, MenuItem, MenuGroup, Submenu
-    },
     props: {
 			theme: {
 				type: String,
