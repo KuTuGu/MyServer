@@ -53,13 +53,19 @@
 						</router-link>
 					</MenuGroup>
 					<MenuGroup title="RTCPeerConnection">
-						<router-link to="/webrtc/RTCPeerConnection">
-							<MenuItem name="2-4">basic</MenuItem>
+						<router-link to="/webrtc/RTCPeerConnection/local">
+							<MenuItem name="2-4">local</MenuItem>
+						</router-link>
+						<router-link to="/webrtc/RTCPeerConnection/remote">
+							<MenuItem name="2-5">remote</MenuItem>
 						</router-link>
 					</MenuGroup>
 					<MenuGroup title="RTCDataChannel">
-						<router-link to="/webrtc/RTCDataChannel">
-							<MenuItem name="2-5">basic</MenuItem>
+						<router-link to="/webrtc/RTCDataChannel/local">
+							<MenuItem name="2-6">local</MenuItem>
+						</router-link>	
+						<router-link to="/webrtc/RTCDataChannel/remote">
+							<MenuItem name="2-6">remote</MenuItem>
 						</router-link>	
 					</MenuGroup>
 			</Submenu>

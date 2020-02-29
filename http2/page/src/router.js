@@ -7,6 +7,10 @@ const PATH = [
   "/", "/mongodb",
   "/webrtc/getUserMedia/video",
   "/webrtc/getUserMedia/screen",
+  "/webrtc/RTCPeerConnection/local",
+  "/webrtc/RTCPeerConnection/remote",
+  "/webrtc/RTCDataChannel/local",
+  "/webrtc/RTCDataChannel/remote",
 ]
 
 export default {

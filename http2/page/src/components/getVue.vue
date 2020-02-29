@@ -10,6 +10,7 @@ export default {
   data(){
     return {
       styleId: '',
+      firstRender: true,
     }
   },
   mounted(){
@@ -62,6 +63,10 @@ export default {
   },
   watch: {
     "$store.state.content": function(newVal){
+      if(this.firstRender){
+        this.firstRender = false;
+        return;
+      }
       this.remove();
       this.render(newVal);
     }

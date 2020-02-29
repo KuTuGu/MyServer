@@ -4,6 +4,7 @@ import Vuex from "vuex"
 import App from './App.vue'
 import router from "./router"
 import store from "./store"
+import AudioVisual from 'vue-audio-visual'
 import ViewUI from 'view-design';
 import 'view-design/dist/styles/iview.css';
 
@@ -12,6 +13,7 @@ Vue.config.productionTip = false
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(ViewUI);
+Vue.use(AudioVisual)
 
 new Vue({
   store: new Vuex.Store(store),

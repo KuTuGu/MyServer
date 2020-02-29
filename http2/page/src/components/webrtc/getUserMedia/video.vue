@@ -1,6 +1,6 @@
 <template>
   <div class="videoContainer">
-    <video id="video" ref="video" :style='filterStyle' controls src=""></video>
+    <video id="video" ref="video" :style='filterStyle' controls></video>
     <div class="selectContainer">
       <div>
         Devices :
@@ -101,7 +101,6 @@ export default {
       }
     },
     closeCamera(){
-      // this.$refs.video.src = undefined;
       this.videoTrack.stop();
       this.cameraOn = false;
     }
@@ -117,7 +116,7 @@ export default {
 }
 #video{
   width: 80%;
-  height: 50vh;
+  height: 70vh;
   margin: 10px 10%;
 }
 .selectContainer{

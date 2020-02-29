@@ -68,7 +68,7 @@ export default {
         autoRefresh: true,
         foldGutter: true,
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
-        fullScreen: true,
+        // fullScreen: true,
         extraKeys: {'Tab': 'autocomplete'},
       },
       readOnly: ["/sign", "/search", "/webrtc/getUserMedia/audio"],
@@ -100,7 +100,8 @@ export default {
         this.skipNextChangeEvent = true
         let scrollInfo = this.editor.getScrollInfo()
         this.editor.setValue(newVal)
-        this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
+        if(scrollInfo)
+          this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
       }
     },
     "$route.path": function(newVal){
@@ -125,6 +126,11 @@ export default {
 <style>
 .CodeMirror{
   position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
   font-family: Recursive, Fira Code, Consolas;
   font-size: 14px;
   color: #2c3e50;

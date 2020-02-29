@@ -86,7 +86,7 @@ export default {
 }
 #video{
   width: 80%;
-  height: 80%;
+  height: 70vh;
   margin: 10px 10%;
 }
 .selectContainer{

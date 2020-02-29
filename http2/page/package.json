@@ -16,15 +16,15 @@
     "PWA"
   ],
   "dependencies": {
-    "core-js": "^3.6.4",
-    "view-design": "^4.1.2",
-    "vue": "^2.6.11",
-    "vue-router": "^3.1.5",
-    "vuex": "^3.1.1",
     "apollo-boost": "^0.4.7",
     "apollo-link-context": "^1.0.19",
+    "core-js": "^3.6.4",
     "graphql": "^14.5.8",
-    "vue-codemirror-lite": "^1.0.4"
+    "view-design": "^4.1.2",
+    "vue": "^2.6.11",
+    "vue-codemirror-lite": "^1.0.4",
+    "vue-router": "^3.1.5",
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.2.0",

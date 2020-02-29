@@ -2,7 +2,7 @@
   <div id="app" class="layout">
     <Layout>
       <Sider class="layout-sidebar" ref="side1" hide-trigger collapsible collapsed-width="78" v-model="isCollapsed">
-        <Menu theme="dark" :width="isCollapsed ? '78px' : '200px'" :class="menuitemClasses" @on-select="selectItem">
+        <Menu theme="dark" :width="isCollapsed ? '78px' : '200px'" id="menu" :class="menuitemClasses" @on-select="selectItem">
           <MenuItem name="code">
             <Icon type="md-code"></Icon>
             <span>Code</span>
@@ -47,8 +47,10 @@ export default {
         "/webrtc/getUserMedia/video": "src/components/webrtc/getUserMedia/video.vue",
         "/webrtc/getUserMedia/audio": "src/components/webrtc/getUserMedia/audio.vue",
         "/webrtc/getUserMedia/screen": "src/components/webrtc/getUserMedia/screen.vue",
-        "/webrtc/RTCPeerConnection": "src/components/webrtc/RTCPeerConnection.vue",
-        "/webrtc/RTCDataChannel": "src/components/webrtc/RTCDataChannel.vue",
+        "/webrtc/RTCPeerConnection/local": "src/components/webrtc/RTCPeerConnection/local.vue",
+        "/webrtc/RTCPeerConnection/remote": "src/components/webrtc/RTCPeerConnection/remote.vue",
+        "/webrtc/RTCDataChannel/local": "src/components/webrtc/RTCDataChannel/local.vue",
+        "/webrtc/RTCDataChannel/remote": "src/components/webrtc/RTCDataChannel/remote.vue",
         "/webgl": "src/components/webgl.vue",
       },
     }
@@ -125,7 +127,6 @@ export default {
   color: #2c3e50;
   min-width: 1000px;
   border: none;
-  overflow: scroll;
 }
 .overflowHidden{
   display: inline-block;
@@ -137,11 +138,10 @@ export default {
 
 /* layout style */
 .layout{
-    border: 1px solid #d7dde4;
-    background: #f5f7f9;
-    position: relative;
-    border-radius: 4px;
-    overflow: scroll;
+  border: 1px solid #d7dde4;
+  background: #f5f7f9;
+  position: relative;
+  border-radius: 4px;
 }
 .layout-header-bar{
     background: #fff;
@@ -150,8 +150,9 @@ export default {
 .layout-sidebar{
   position: relative;
   margin: 0;
-  top: 60px;
+  /* top: 60px; */
   left: 0;
+  padding-top: 60px;
 }
 .layout-footer{
   display: flex;
@@ -169,10 +170,10 @@ export default {
 .menu-icon{
     transition: all .3s;
 }
-.menu-item{
+#menu{
   position: fixed;
   left: 0;
-  height: calc(100vh - 62px);
+  height: calc(100vh - 82px);
   transition: width .2s ease-in-out;
 }
 .menu-item span{
@@ -201,7 +202,7 @@ export default {
     font-size: 22px;
 }
 .content{
-  min-height: calc(100vh - 122px);
+  min-height: calc(100vh - 128px);
   margin: 80px 20px 0 20px;
   background-color: #506b9e;
 }
